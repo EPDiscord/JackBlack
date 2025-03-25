@@ -15,7 +15,7 @@ module.exports = {
             .setRequired(true)
             .addChoices(
               { name: 'Balance', value: 'bal' },
-              { name: 'Debt', value: 'debt' }
+              { name: 'Debt', value: 'debt' },
             ))
     .addIntegerOption(opt =>
         opt.setName("value")

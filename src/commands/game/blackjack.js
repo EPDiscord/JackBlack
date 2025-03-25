@@ -191,6 +191,7 @@ module.exports = {
       return; // have to return otherwise banker will unbust
     }  else if (collect(banker) === collect(player)) {
       end(true, "Tie; Pushback.");
+      return;
     }
     
     // ways to lose
