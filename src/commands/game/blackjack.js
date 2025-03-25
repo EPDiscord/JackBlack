@@ -59,14 +59,13 @@ module.exports = {
     let mkEmbed = stake => new EmbedBuilder()
       .setColor("#c82626")
       .setTitle("BlackJack")
-      .setDescription(`Stake: ${stake} ${inter.client.currency}`)
+      .setDescription(`Stake: ${inter.client.currency}${stake}`)
       .addFields(
         { name: `Banker ${isNaN(collect(banker)) ? "" : `(${collect(banker) > 21 ? "bust!" : collect(banker)})`}`, value: `${banker.map(toEmoji).join(" ")}` },
         { name: "\u200B", value: "\u200B" },
         { name: `Player (${collect(player) > 21 && player.length > 2 ? "bust!" : collect(player)})`, value: `${player.map(toEmoji).join(" ")}` },
       )
-      .setFooter({ text: "JackBlack by @firefish111", iconURL: "https://cdn.discordapp.com/avatars/871048036342710312/fdabfe1e8f750469342c73374c430184.webp" })
-      .setTimestamp();
+      .setFooter({ text: "JackBlack by firefish111", iconURL: "https://cdn.discordapp.com/avatars/871048036342710312/fdabfe1e8f750469342c73374c430184.webp" });
 
     let balanc = await inter.client.datadb.getusr(inter.user.id, "bal");
     if (balanc == 0) {
@@ -156,7 +155,7 @@ module.exports = {
           mkEmbed(inter.options.getInteger("stake"))
           .addFields({
             name: how,
-            value: `You ${won ? 'win' : 'lose'} \`${inter.options.getInteger("stake")} ${inter.client.currency}\`${won ? '!' : '.'}`,
+            value: `You ${won ? 'win' : 'lose'} \`${inter.client.currency}${inter.options.getInteger("stake")}\`${won ? '!' : '.'}`,
             inline: true,
           })
         ],
