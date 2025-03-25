@@ -27,9 +27,23 @@ module.exports = {
     const what = inter.options.getString("field");
     const val = inter.options.getInteger("value");
 
-    await inter.client.datadb.sql`
-      update users set ${inter.client.datadb.sql(what)} = ${inter.client.datadb.sql(what)} + ${val} where snowflake = ${who.id} returning ${inter.client.datadb.sql(what)}
-    `;
-    await inter.reply({ content: `Edited \`${what}\` for \`${who}\`. Set value to \`${val}\`.`, ephemeral: true });
+    try {
+      let data = await inter.client.datadb.sql`
+      update users set ${inter.client.datadb.sql(what)} = ${val}
+      where snowflake = ${who.id} 
+      returning ${inter.client.datadb.sql(what)}
+      `;
+
+      if (data.length === 0) {
+        return inter.reply({ content: "User not found in the database!", ephemeral: true });
+      }
+      
+    await inter.reply({ content: `Successfully updated the \`${what}\` for \`${who.username}\`. Set value to \`${val}\`.`, ephemeral: true });
+    } catch (erorr) {
+      console.error(error);
+      inter.reply({ content: "An error occurred while updating the database.", ephemeral: true });
+    }
+    
+    
   }
 }
