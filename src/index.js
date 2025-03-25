@@ -2,7 +2,13 @@
 const { Collection, Events, REST, Routes, Client, GatewayIntentBits, EmbedBuilder, ActivityType } = require("discord.js");
 const token = process.env.token;
 const bot_uid = process.env.bot_uid;
-const fs = require("fs");
+const fs = require("node:fs");
+const path = require('node:path');
+
+const commands = [];
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
+
 const betterrand = require("seedrandom");
 const postgres = require("postgres");
 //const fetch = require('node-fetch')
@@ -153,13 +159,42 @@ Array.prototype.choose = function(noise) {
   return this[ix];
 };
 
-// slash command loader (very shitty)
-let comfiles = fs.readdirSync(`/app/src/commands`);
-let coms = comfiles.map(file => {
-  let com = require("./commands/" + file.slice(0, -3));
-  client.commands.set(com.data.name, com);
-  return com.data.toJSON();
-});
+
+for (const folder of commandFolders) {
+	// Grab all the command files from the commands directory you created earlier
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		if ('data' in command && 'execute' in command) {
+			commands.push(command.data.toJSON());
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+
+const rest = new REST().setToken(token);
+
+(async () => {
+	try {
+		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+		// The put method is used to fully refresh all commands in the guild with the current set
+		const data = await rest.put(
+			Routes.applicationGuildCommands(clientId, guildId),
+			{ body: commands },
+		);
+
+		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+	} catch (error) {
+		// And of course, make sure you catch and log any errors!
+		console.error(error);
+	}
+})();
+
 
 // When the client is ready, run this code (only once)
 client.once("ready", async () => {
@@ -171,20 +206,6 @@ client.once("ready", async () => {
     await client.datadb.udfltconf(guild.id);
   });
 });
-
-const rest = new REST().setToken(token);
-
-console.log(coms);
-
-// top level await is apparently a thing? but doesnt work
-(async () => {
-  const cominf = await rest.put(
-    Routes.applicationCommands(bot_uid),
-    { body: coms },
-  );
-
-  console.log(`${cominf.length} coms registered.`);
-})();
 
 client.on(Events.InteractionCreate, async inter => {
   if (!inter.isChatInputCommand()) return;
