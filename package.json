@@ -1,0 +1,12 @@
+{
+  "name": "jackblack",
+  "version": "4.0.0",
+  "main": "src/index.js",
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.18.0",
+    "postgres": "^3.4.5",
+    "seedrandom": "^3.0.5"
+  }
+}

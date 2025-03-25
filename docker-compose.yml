@@ -1,0 +1,24 @@
+services:
+  db:
+    image: "postgres:alpine"
+    env_file: "bot.env"
+    volumes:
+      - "./db:/var/lib/postgresql/data"
+    ports:
+      - "5433:5433"
+    networks:
+      - movement
+
+  bot:
+    build: .
+    env_file: "bot.env"
+    depends_on:
+      - "db"
+    ports:
+      - "3000:3000"
+    networks:
+      - movement
+
+networks:
+  movement:
+    driver: bridge
