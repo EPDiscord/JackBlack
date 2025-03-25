@@ -2,23 +2,23 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("setdata")
+    .setName("editdata")
     .setDescription("Modifies a user's data. Only available for administrators.")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-    .addUserOption(opt =>
-       opt.setName("victim")
+    .addUserOption(option =>
+       option.setName("victim")
              .setDescription("Who to fiddle with the data of.")
              .setRequired(true))
-    .addStringOption(opt =>
-        opt.setName("field")
+    .addStringOption(option =>
+        option.setName("field")
             .setDescription("What to change about the user.")
             .setRequired(true)
             .addChoices(
               { name: 'Balance', value: 'bal' },
               { name: 'Debt', value: 'debt' },
             ))
-    .addIntegerOption(opt =>
-        opt.setName("value")
+    .addIntegerOption(option =>
+        option.setName("value")
             .setDescription("What to change the field to.")
             .setMinValue(0)
             .setRequired(true)),
