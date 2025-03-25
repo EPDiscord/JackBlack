@@ -41,7 +41,7 @@ module.exports = {
     const buts = new ActionRowBuilder().addComponents(confirmBut, cancelBut);
 
     const conf = await inter.reply({
-      content: `Are you sure you want to transfer ${toPay} ${inter.client.currency} to ${payee}?`,
+      content: `Are you sure you want to transfer \`${toPay} ${inter.client.currency}\` to \`${payee.username}\`?`,
       components: [buts],
       ephemeral: true,
     });
@@ -58,7 +58,7 @@ module.exports = {
       if (resp.customId === "confirm") {
         await inter.client.datadb.modusr(inter.user.id, "bal", -toPay);
         await inter.client.datadb.modusr(payee.id, "bal", toPay);
-        await resp.update({ content: `You have transferred ${toPay} ${inter.client.currency} to ${payee}.`, components: [], ephemeral: true });
+        await resp.update({ content: `You have transferred \`${toPay} ${inter.client.currency}\` to \`${payee.username}\`.`, components: [], ephemeral: true });
       } else if (resp.customId === "cancel") {
         await resp.update({ content: "Transfer cancelled.", components: [], ephemeral: true });
       }

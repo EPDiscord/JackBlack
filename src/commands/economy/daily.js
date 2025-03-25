@@ -15,17 +15,17 @@ module.exports = {
         await inter.client.datadb.modusr(inter.user.id, "debt", -inter.client.xconfig.daily);
         await inter.client.datadb.modconf(inter.guildId, "loanpool", inter.client.xconfig.daily);
 
-        await inter.reply(`Claimed daily of ${inter.client.xconfig.daily} ${inter.client.currency}.\nDue to your outstanding debts, this has all been automatically redirected into paying them off.`);
+        await inter.reply(`Claimed daily of \`${inter.client.xconfig.daily} ${inter.client.currency}\`.\nDue to your outstanding debts, this has all been automatically redirected into paying them off.`);
       } else if (d > 0) {
         let left = inter.client.xconfig.daily - d;
 
         await inter.client.datadb.modusr(inter.user.id, "debt", -d);
         await inter.client.datadb.modusr(inter.user.id, "bal", left);
 
-        await inter.reply(`Claimed daily of ${inter.client.xconfig.daily} ${inter.client.currency}.\n${d} ${inter.client.currency} of this has been deducted to finish paying off your debts.`);
+        await inter.reply(`Claimed daily of \`${inter.client.xconfig.daily} ${inter.client.currency}.\n${d} ${inter.client.currency}\` of this has been deducted to finish paying off your debts.`);
       } else {
         await inter.client.datadb.modusr(inter.user.id, "bal", inter.client.xconfig.daily);
-        await inter.reply(`Successfully claimed daily of ${inter.client.xconfig.daily} ${inter.client.currency}!`);
+        await inter.reply(`Successfully claimed daily of \`${inter.client.xconfig.daily} ${inter.client.currency}\`!`);
       }
     } else {
       s_until = ((Date.now()/86400_000>>0)+1)*86400;

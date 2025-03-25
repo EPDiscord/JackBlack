@@ -156,7 +156,7 @@ module.exports = {
           mkEmbed(inter.options.getInteger("stake"))
           .addFields({
             name: how,
-            value: `You ${won ? 'win' : 'lose'} ${inter.options.getInteger("stake")} ${inter.client.currency}${won ? '!' : '.'}`,
+            value: `You ${won ? 'win' : 'lose'} \`${inter.options.getInteger("stake")} ${inter.client.currency}\`${won ? '!' : '.'}`,
             inline: true,
           })
         ],

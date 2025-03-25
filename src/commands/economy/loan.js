@@ -45,7 +45,7 @@ module.exports = {
       let deb = await inter.client.datadb.getusr(inter.user.id, "debt");
       if (deb) {
         await inter.reply({
-          content: `Loan refused, you still have outstanding debt, of ${deb} ${inter.client.currency}.`,
+          content: `Loan refused, you still have outstanding debt, of \`${deb} ${inter.client.currency}\`.`,
           ephemeral: true,
         });
         return;
@@ -65,7 +65,7 @@ module.exports = {
       const buts = new ActionRowBuilder().addComponents(confirmBut, cancelBut);
 
       const conf = await inter.reply({
-        content: `Are you sure you want to borrow ${loanAmount} ${inter.client.currency} at 20% interest?`,
+        content: `Are you sure you want to borrow \`${loanAmount} ${inter.client.currency}\` at \`20%\` interest?`,
         components: [buts],
         ephemeral: true,
       });
@@ -80,7 +80,7 @@ module.exports = {
           await inter.client.datadb.modusr(inter.user.id, "bal", loanAmount);
           await inter.client.datadb.modusr(inter.user.id, "debt", Math.ceil(loanAmount * 1.2));
           await inter.client.datadb.modconf(inter.guildId, "loanpool", -loanAmount);
-          await resp.update({ content: `You have created a loan for ${loanAmount} ${inter.client.currency}. Your debt has been adjusted accordingly.\nYou can view your debt using the \`/loan viewdebt\` command.`, components: [], ephemeral: true });
+          await resp.update({ content: `You have created a loan for \`${loanAmount} ${inter.client.currency}\`. Your debt has been adjusted accordingly.\nYou can view your debt using the \`/balance\` command.`, components: [], ephemeral: true });
         } else if (resp.customId === "cancel") {
           await resp.update({ content: "Loan cancelled.", components: [], ephemeral: true });
         }
@@ -107,7 +107,7 @@ module.exports = {
       await inter.client.datadb.modconf(inter.guildId, "loanpool", toPay);
       await inter.client.datadb.modusr(inter.user.id, "debt", -toPay);
       await inter.client.datadb.modusr(inter.user.id, "bal", -toPay);
-      await inter.reply({ content: `Successfully paid off ${toPay} ${inter.client.currency} of debt.`, ephemeral: true });
+      await inter.reply({ content: `Successfully paid off \`${toPay} ${inter.client.currency}\` of debt.`, ephemeral: true });
       break;
     default:
       await inter.reply({
