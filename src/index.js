@@ -169,12 +169,15 @@ for (const folder of commandFolders) {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
 		if ('data' in command && 'execute' in command) {
+      console.debug(`[DEBUG] Registering command in path ${filePath}`);
 			commands.push(command.data.toJSON());
+      client.commands.set(command.data.name, command);
 		} else {
 			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
 	}
 }
+
 
 const rest = new REST().setToken(token);
 
@@ -189,6 +192,7 @@ const rest = new REST().setToken(token);
 		);
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
 		console.error(error);
@@ -205,6 +209,7 @@ client.once("ready", async () => {
   client.guilds.cache.forEach(async (guild) => {
     await client.datadb.udfltconf(guild.id);
   });
+  
 });
 
 client.on(Events.InteractionCreate, async inter => {
