@@ -30,5 +30,6 @@ module.exports = {
     let data = await inter.client.datadb.sql`
       update users set ${inter.client.datadb.sql(what)} = ${inter.client.datadb.sql(what)} + ${val} where snowflake = ${who.id} returning ${inter.client.datadb.sql(what)}
     `;
+    await inter.reply({ content: `Edited \`${what}\` for \`${who}\`. Set value to \`${val}\`.`, ephemeral: true });
   }
 }
