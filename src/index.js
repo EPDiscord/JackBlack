@@ -196,24 +196,12 @@ client.on(Events.InteractionCreate, async inter => {
     return;
   }
 
-  console.log(`${inter.user.tag} ran /${inter.commandName}`);
-
   // ensure that there is always a forced balance
   if (await client.datadb.udfltusr(inter.user.id)) {
     inter.channel.send(`${inter.user} Hey! Welcome to JackBlack.\n- Play your first game with \`/blackjack\`!\n- Claim your daily ${client.xconfig.daily} ${client.currency} with \`/daily\`!\n- See \`/help\` for all I can do!\n\n-# Please gamble responsibly.`);
   }
 
   await com.execute(inter);
-});
-
-client.on("messageCreate", async msg => {
- // console.log(`in #${msg.channel.name} (<#${msg.channel.id}>), ${msg.author.username}#${msg.author.discriminator}: ${msg.content}`);
-  
-  if (msg.author.bot) return;
-
-  /*
-    this looks a bit empty - there used to be triggers (like respond when certain things are said) here, but i cut them out because excessive
-  */
 });
 
 // Login to Discord with your client's token

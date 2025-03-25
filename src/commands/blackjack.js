@@ -189,8 +189,10 @@ module.exports = {
     } else if (collect(banker) > 21) {
       end(true, "Banker bust!"); // there is no "you beat the banker" as banker will never stick less than player
       return; // have to return otherwise banker will unbust
+    }  else if (collect(banker) === collect(player)) {
+      end(true, "Tie; Pushback.");
     }
-
+    
     // ways to lose
     if (collect(player) > 21) {
       end(false, "You bust.");
@@ -200,8 +202,6 @@ module.exports = {
       end(false, "Banker's five card trick.");
     } else if (collect(banker) > collect(player)) {
       end(false, "Banker's beat you.");
-    } else if (collect(banker) === collect(player)) {
-      end(true, "Tie; Pushback.");
     } else { // edge case, you lose by default
       end(false, "You lost.");
     }
