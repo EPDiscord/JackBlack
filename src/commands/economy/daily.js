@@ -5,9 +5,13 @@ module.exports = {
     .setName("daily")
     .setDescription("Claim your daily money amuont."),
   execute: async inter => {
-    let candaily = await inter.client.datadb.sql`select last_daily from users where snowflake = ${inter.user.id} and last_daily is null or last_daily < 'today'`;
+    let candaily = await inter.client.datadb.sql`select * from users where snowflake = ${inter.user.id} and last_daily > 'today'`;
+    
 
-    if (candaily.length) { // can daily
+    if (!candaily.length) {
+      s_until = ((Date.now()/86400_000>>0)+1)*86400;
+      await inter.reply(`Daily already claimed today. Try again <t:${s_until}:R>`);
+    } else {
       await inter.client.datadb.sql`update users set last_daily = 'today' where snowflake = ${inter.user.id}`;
 
       let d = inter.client.datadb.getusr(inter.user.id, "debt");
@@ -27,9 +31,6 @@ module.exports = {
         await inter.client.datadb.modusr(inter.user.id, "bal", inter.client.xconfig.daily);
         await inter.reply(`Successfully claimed daily of \`${inter.client.xconfig.daily} ${inter.client.currency}\`!`);
       }
-    } else {
-      s_until = ((Date.now()/86400_000>>0)+1)*86400;
-      await inter.reply(`Daily already claimed today. Try again <t:${s_until}:R>`);
     }
   }
 }
