@@ -160,7 +160,7 @@ module.exports = {
           mkEmbed(inter.options.getInteger("stake"))
           .addFields({
             name: how,
-            value: `You ${won ? 'win' : 'lose'} \`${inter.client.currency}${inter.options.getInteger("stake")}\`${won ? '!' : '.'}`,
+            value: `You ${won == 1 ? 'win' : win == 0 ? 'keep your' : 'lose'} \`${inter.client.currency}${inter.options.getInteger("stake")}\`${won == 1 ? '!' : '.'}`,
             inline: true,
           })
         ],
@@ -169,7 +169,7 @@ module.exports = {
       });
 
       await inter.client.datadb.modusr(inter.user.id, "bal", inter.options.getInteger("stake") * won); // negative if lost, positive if won
-      await inter.client.datadb.modconf(inter.guildId, `total${won ? 'won' : 'lost'}`, inter.options.getInteger("stake"));
+      if (won != 0) await inter.client.datadb.modconf(inter.guildId, `total${won == 1 ? 'won' : 'lost'}`, inter.options.getInteger("stake"));
 
       // no longer playing
       inter.client.playing_rn.splice(inter.client.playing_rn.indexOf(inter.user.id), 1);
@@ -207,7 +207,7 @@ module.exports = {
     } else if (banker.length === 5 && collect(banker) <= 21) {
       end(-1, "Banker's five card trick.");
     } else if (collect(banker) > collect(player)) {
-      end(-1, "Banker's beat you.");
+      end(-1, "Banker beat you.");
     } else { // in case of an edge case, you lose by default
       end(-1, "You lost.");
     }
