@@ -118,7 +118,7 @@ module.exports = {
       ephemeral: false,
     });
 
-    do { // play
+    while (player.length < 5 && collect(player) < 21 && !stop) { // play
       // ace is 1 OR 11
       ace(true);
 
@@ -144,7 +144,7 @@ module.exports = {
         components: stop ? [] : [input],
         ephemeral: false,
       });
-    } while (player.length < 5 && collect(player) <= 21 && !stop)
+    }
 
     // be rid of face down (superficially, turn it over)
     banker.pop();
@@ -160,7 +160,7 @@ module.exports = {
           mkEmbed(inter.options.getInteger("stake"))
           .addFields({
             name: how,
-            value: `You ${won == 1 ? 'win' : win == 0 ? 'keep your' : 'lose'} \`${inter.client.currency}${inter.options.getInteger("stake")}\`${won == 1 ? '!' : '.'}`,
+            value: `You ${won == 1 ? 'win' : won == 0 ? 'keep your' : 'lose'} \`${inter.client.currency}${inter.options.getInteger("stake")}\`${won == 1 ? '!' : '.'}`,
             inline: true,
           })
         ],
