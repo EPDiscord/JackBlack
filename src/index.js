@@ -15,6 +15,7 @@ const postgres = require("postgres");
 
 Math.seedrandom = betterrand();
 rng = betterrand.xor4096(Math.seedrandom().toString()+token+bot_uid+"hehe"+Date.now(), { entropy: true });
+// "yeah that looks like a random enough seed"
 
 /**
  * An interface to a database which has two sub-databases:
@@ -40,7 +41,7 @@ class DB {
     let retries = 0;
     while (retries < 5) {
       try {
-        await this.sql`create table if not exists users(snowflake bigint primary key, bal int default 20, debt int default 0, last_daily date);`
+        await this.sql`create table if not exists users(snowflake bigint primary key, bal int default 2000, debt int default 0, last_daily date);`
         await this.sql`create table if not exists server(snowflake bigint primary key, loanpool int default 5000, jackpot int, totallost int default 0, totalwon int default 0)`;
         retries = 999;
       } catch (e) {
@@ -77,7 +78,7 @@ class DB {
       update server set ${this.sql(field)} = ${this.sql(field)} + ${val} where snowflake = ${server} returning ${this.sql(field)}
     `;
 
-    if (field < 0) console.warn(`WARN: negative value detected at conf:${server}).${field}`);
+    if (field < 0) console.warn(`WARN: negative value detected at conf:${server}:${field}`);
   }
 
   /**
@@ -149,7 +150,7 @@ client.emojistore = readx.emoji;
 client.xconfig = readx.conf;
 client.sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// kazakh tenge (courtesy of @muffin717)
+// alias, because this was shoehorned on
 client.currency = readx.conf.currency;
 
 // bad function akin to python's `random.choice`, but takes random noise
@@ -161,42 +162,42 @@ Array.prototype.choose = function(noise) {
 
 
 for (const folder of commandFolders) {
-	// Grab all the command files from the commands directory you created earlier
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-		if ('data' in command && 'execute' in command) {
+  // Grab all the command files from the commands directory you created earlier
+  const commandsPath = path.join(foldersPath, folder);
+  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+  // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+  for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    if ('data' in command && 'execute' in command) {
       console.debug(`[DEBUG] Registering command in path ${filePath}`);
-			commands.push(command.data.toJSON());
+      commands.push(command.data.toJSON());
       client.commands.set(command.data.name, command);
-		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-		}
-	}
+    } else {
+      console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+    }
+  }
 }
 
 
 const rest = new REST().setToken(token);
 
 (async () => {
-	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+  try {
+    console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-		// The put method is used to fully refresh all commands in the guild with the current set
-		const data = await rest.put(
-			Routes.applicationCommands(bot_uid),
-			{ body: commands },
-		);
+    // The put method is used to fully refresh all commands in the guild with the current set
+    const data = await rest.put(
+      Routes.applicationCommands(bot_uid),
+      { body: commands },
+    );
 
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
     
-	} catch (error) {
-		// And of course, make sure you catch and log any errors!
-		console.error(error);
-	}
+  } catch (error) {
+    // And of course, make sure you catch and log any errors!
+    console.error(error);
+  }
 })();
 
 

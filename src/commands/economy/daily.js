@@ -5,12 +5,17 @@ module.exports = {
     .setName("daily")
     .setDescription("Claim your daily money amuont."),
   execute: async inter => {
-    let candaily = await inter.client.datadb.sql`select last_daily from users where snowflake = ${inter.user.id} and last_daily < 'today' or snowflake = ${inter.user.id} and last_daily is null`;
+    let candaily = await inter.client.datadb.sql`
+      select last_daily from users
+      where
+        snowflake = ${inter.user.id} and last_daily < 'today'
+        or
+        snowflake = ${inter.user.id} and last_daily is null`;
 
-    if (candaily.length) { // can daily
+    if (candaily.length) { // if anything was returned
       await inter.client.datadb.sql`update users set last_daily = 'today' where snowflake = ${inter.user.id}`;
 
-      let d = inter.client.datadb.getusr(inter.user.id, "debt");
+      let d = await inter.client.datadb.getusr(inter.user.id, "debt");
       if (d >= inter.client.xconfig.daily) {
         await inter.client.datadb.modusr(inter.user.id, "debt", -inter.client.xconfig.daily);
         await inter.client.datadb.modconf(inter.guildId, "loanpool", inter.client.xconfig.daily);

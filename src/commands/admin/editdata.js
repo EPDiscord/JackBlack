@@ -29,9 +29,9 @@ module.exports = {
 
     try {
       let data = await inter.client.datadb.sql`
-      update users set ${inter.client.datadb.sql(what)} = ${val}
-      where snowflake = ${who.id} 
-      returning ${inter.client.datadb.sql(what)}
+        update users set ${inter.client.datadb.sql(what)} = ${val}
+        where snowflake = ${who.id} 
+        returning ${inter.client.datadb.sql(what)}
       `;
 
       if (data.length === 0) {

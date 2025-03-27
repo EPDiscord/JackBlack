@@ -78,6 +78,8 @@ module.exports = {
       return;
     }
     
+    // keeps an in-memory list of all people playing, so that you can't just start another game if you get a hand you don't like.
+    // writing this to the db would be a: unnecessary db writes, and b: if the bot dies during a game, no new games can be started
     inter.client.playing_rn ??= [];
 
     if (inter.client.playing_rn.includes(inter.user.id)) {
@@ -144,11 +146,14 @@ module.exports = {
       });
     } while (player.length < 5 && collect(player) <= 21 && !stop)
 
-   // be rid of face down (superficially, turn it over)
-   banker.pop();
+    // be rid of face down (superficially, turn it over)
+    banker.pop();
     genCard(false); ace(false);
 
     // end game thunk
+    // won = -1 => loss
+    // won = 0 => pushback
+    // won = 1 => win
     const end = async (won, how) => {
       await inter.editReply({
         embeds: [
@@ -163,14 +168,15 @@ module.exports = {
         ephemeral: false,
       });
 
-      await inter.client.datadb.modusr(inter.user.id, "bal", inter.options.getInteger("stake") * (-1)**(!won)); // negative if lost, positive if won
+      await inter.client.datadb.modusr(inter.user.id, "bal", inter.options.getInteger("stake") * won); // negative if lost, positive if won
       await inter.client.datadb.modconf(inter.guildId, `total${won ? 'won' : 'lost'}`, inter.options.getInteger("stake"));
-      inter.client.playing_rn.splice(inter.client.playing_rn.indexOf(inter.user.id), 1);
 
+      // no longer playing
+      inter.client.playing_rn.splice(inter.client.playing_rn.indexOf(inter.user.id), 1);
     }
 
     if ((collect(player) === 21 && player.length === 2) && (collect(banker) < 21)) {
-      end(true, "BlackJack!");
+      end(1, "BlackJack!");
       return;
     }
 
@@ -183,27 +189,27 @@ module.exports = {
 
     // five-card trick
     if (player.length === 5 && collect(player) <= 21 && (banker.length < 5 || (banker.length == 5 && collect(player) > collect(banker)))) {
-      end(true, "Five card trick!");
+      end(1, "Five card trick!");
       return;
     } else if (collect(banker) > 21) {
-      end(true, "Banker bust!"); // there is no "you beat the banker" as banker will never stick less than player
+      end(1, "Banker bust!"); // there is no "you beat the banker" as banker will never stick less than player
       return; // have to return otherwise banker will unbust
-    }  else if (collect(banker) === collect(player)) {
-      end(true, "Tie; Pushback.");
+    } else if (collect(banker) === collect(player)) { // pushback (noone loses any money) for fairness
+      end(0, "Tie; Pushback.");
       return;
     }
     
     // ways to lose
     if (collect(player) > 21) {
-      end(false, "You bust.");
+      end(-1, "You bust.");
     } else if (banker.length === 2 && collect(banker) === 21) {
-      end(false, "Banker's BlackJack.");
+      end(-1, "Banker's BlackJack.");
     } else if (banker.length === 5 && collect(banker) <= 21) {
-      end(false, "Banker's five card trick.");
+      end(-1, "Banker's five card trick.");
     } else if (collect(banker) > collect(player)) {
-      end(false, "Banker's beat you.");
-    } else { // edge case, you lose by default
-      end(false, "You lost.");
+      end(-1, "Banker's beat you.");
+    } else { // in case of an edge case, you lose by default
+      end(-1, "You lost.");
     }
   }
 }
