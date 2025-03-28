@@ -36,7 +36,7 @@ module.exports = {
 
       if (loanAmount > (await inter.client.datadb.getconf(inter.guildId, "loanpool") / 2)) {
         await inter.reply({
-          content: "loan refused - don't be too greedy or we repossess your kidneys",
+          content: `Error: You have not been approved to loan ${inter.client.currency}${loanAmount}.`,
           ephemeral: false,
         });
         return;
@@ -45,7 +45,7 @@ module.exports = {
       let deb = await inter.client.datadb.getusr(inter.user.id, "debt");
       if (deb) {
         await inter.reply({
-          content: `Loan refused, you still have outstanding debt, of \`${deb} ${inter.client.currency}\`.`,
+          content: `Error: You have not been approved for a loan as you still have outstanding debt of \`${inter.client.currency}${deb}\`.`,
           ephemeral: true,
         });
         return;
@@ -65,7 +65,7 @@ module.exports = {
       const buts = new ActionRowBuilder().addComponents(confirmBut, cancelBut);
 
       const conf = await inter.reply({
-        content: `Are you sure you want to borrow \`${loanAmount} ${inter.client.currency}\` at \`20%\` interest?`,
+        content: `Are you sure you want to borrow \`${inter.client.currency}${loanAmount}\` at \`20%\` interest?`,
         components: [buts],
         ephemeral: true,
       });
@@ -80,7 +80,7 @@ module.exports = {
           await inter.client.datadb.modusr(inter.user.id, "bal", loanAmount);
           await inter.client.datadb.modusr(inter.user.id, "debt", Math.ceil(loanAmount * 1.2));
           await inter.client.datadb.modconf(inter.guildId, "loanpool", -loanAmount);
-          await resp.update({ content: `You have created a loan for \`${loanAmount} ${inter.client.currency}\`. Your debt has been adjusted accordingly.\nYou can view your debt using the \`/balance\` command.`, components: [], ephemeral: true });
+          await resp.update({ content: `You have created a loan for \`${inter.client.currency}${loanAmount}\`. Your debt has been adjusted accordingly.\nYou can view your debt using the \`/balance\` command.`, components: [], ephemeral: true });
         } else if (resp.customId === "cancel") {
           await resp.update({ content: "Loan cancelled.", components: [], ephemeral: true });
         }
@@ -95,19 +95,19 @@ module.exports = {
       let toPay = inter.options.getSubcommand() === "all" ? totalDebt : inter.options.getInteger("amount");
 
       if (toPay > totalDebt) {
-        await inter.reply({ content: "You cannot pay off more debt than you have.", ephemeral: true });
+        await inter.reply({ content: "Error: You cannot pay off more debt than you have.", ephemeral: true });
         return;
       }
 
       if (toPay > totalmoney) {
-        await inter.reply({ content: "You cannot pay off more debt than you can afford.", ephemeral: true });
+        await inter.reply({ content: "Error: You cannot pay off more debt than you can afford.", ephemeral: true });
         return;
       }
 
       await inter.client.datadb.modconf(inter.guildId, "loanpool", toPay);
       await inter.client.datadb.modusr(inter.user.id, "debt", -toPay);
       await inter.client.datadb.modusr(inter.user.id, "bal", -toPay);
-      await inter.reply({ content: `Successfully paid off \`${toPay} ${inter.client.currency}\` of debt.`, ephemeral: true });
+      await inter.reply({ content: `Successfully paid off \`${inter.client.currency}${toPay}\` of debt.`, ephemeral: true });
       break;
     default:
       await inter.reply({

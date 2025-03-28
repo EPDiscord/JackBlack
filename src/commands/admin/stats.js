@@ -12,6 +12,6 @@ module.exports = {
 
     console.log(data);
 
-    await inter.reply({ content: `- There are \`${data[0].loanpool} ${inter.client.currency}\` in the loan pool (only half of which can be obtained at once).\n- In BlackJack, a total of \`${data[0].totallost} ${inter.client.currency}\` has been lost, and \`${data[0].totalwon} ${inter.client.currency}\` has been won.`, ephemeral: true });
+    await inter.reply({ content: `- There are \`${data[0].loanpool} ${inter.client.currency}\` in the loan pool (only half of which can be obtained at once).\n- In BlackJack, a total of \`${inter.client.currency}${data[0].totallost}\` has been lost, and \`${inter.client.currency}${data[0].totalwon}\` has been won.`, ephemeral: true });
   }
 }
