@@ -169,14 +169,14 @@ module.exports = {
       });
 
       await inter.client.datadb.modusr(inter.user.id, "bal", inter.options.getInteger("stake") * won); // negative if lost, positive if won
-      if (won != 0) await inter.client.datadb.modconf(inter.guildId, `total${won == 1 ? 'won' : 'lost'}`, inter.options.getInteger("stake"));
+      if (won != 0) await inter.client.datadb.modconf(inter.guildId, `total${won >= 1 ? 'won' : 'lost'}`, inter.options.getInteger("stake"));
 
       // no longer playing
       inter.client.playing_rn.splice(inter.client.playing_rn.indexOf(inter.user.id), 1);
     }
 
     if ((collect(player) === 21 && player.length === 2) && (collect(banker) < 21)) {
-      end(1, "BlackJack!");
+      end(1.5, "BlackJack!");
       return;
     }
 
