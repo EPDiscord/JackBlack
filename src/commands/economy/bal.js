@@ -9,13 +9,8 @@ module.exports = {
             .setDescription("Whose balance do you wish to see?")
             .setRequired(false)),
   execute: async inter => {
-    let account;
-    account = inter.options.getUser("account");
-    try {
-      console.log(account);
-    } catch (error) {
-      console.log(error);
-    }
+    let account = inter.options.getUser("account");
+    if (account == null) account = inter.user;
     try {
       if (inter.user.id == account.id) {
         let d = await inter.client.datadb.getusr(inter.user.id, "debt");
