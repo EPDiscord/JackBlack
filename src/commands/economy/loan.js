@@ -21,7 +21,7 @@ module.exports = {
               .addIntegerOption(opt =>
                 opt.setName("amount")
                   .setDescription("Amount of debt to pay off.")
-                  .setMinValue(1)
+                  .setMinValue(100)
                   .setRequired(true)))
         .addSubcommand(subcom =>
             subcom.setName("all")
