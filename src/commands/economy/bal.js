@@ -10,7 +10,8 @@ module.exports = {
             .setRequired(false)),
   execute: async inter => {
 
-    let account = inter.options.getUser("account")
+    let account;
+    account = inter.options.getUser("account")
     if (inter.user.id == account.id) {
       let d = await inter.client.datadb.getusr(inter.user.id, "debt");
       await inter.reply({ content: `You currently have \`${inter.client.currency}${await inter.client.datadb.getusr(inter.user.id, "bal")}\`.` +
