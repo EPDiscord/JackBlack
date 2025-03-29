@@ -7,11 +7,8 @@ module.exports = {
     .addUserOption(opt =>
       opt.setName("account")
             .setDescription("Whose balance do you wish to see?")
-            .setRequired(true)),
+            .setRequired(false)),
   execute: async inter => {
-
-
-
     let account;
     account = inter.options.getUser("account");
     try {
@@ -25,8 +22,7 @@ module.exports = {
         await inter.reply({ content: `You currently have \`${inter.client.currency}${await inter.client.datadb.getusr(inter.user.id, "bal")}\`.` +
          (d ? `\nYou have an outstanding debt of \`${inter.client.currency}${d}\`` : `\nWant more money? You can borrow money from Jack using \`/loan borrow\``), ephemeral: true });
       } else {
-        console.log(`Checking account balance of: ` + account);
-        let d = await inter.client.datadb.getusr(account.user.id, "debt");
+        let d = await inter.client.datadb.getusr(account.id, "debt");
         await inter.reply({ content: `${account.username} currently has \`${inter.client.currency}${await inter.client.datadb.getusr(account.id, "bal")}\`.` +
          (d ? `\nThey have an outstanding debt of \`${inter.client.currency}${d}\`` : ``), ephemeral: true });
       }
