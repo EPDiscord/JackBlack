@@ -24,7 +24,7 @@ module.exports = {
     .addIntegerOption(opt =>
         opt.setName("stake")
             .setDescription("How much you want to bet.")
-            .setMinValue(1)
+            .setMinValue(5)
             .setRequired(true)),
   execute: async inter => {
     // used for randomness (was possible otherwise for two people to call the command at the same time and get the same game)
