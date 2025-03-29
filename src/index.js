@@ -225,7 +225,7 @@ client.on(Events.InteractionCreate, async inter => {
 
   // ensure that there is always a forced balance
   if (await client.datadb.udfltusr(inter.user.id)) {
-    inter.channel.send(`${inter.user} Hey! Welcome to JackBlack.\n- Play your first game with \`/blackjack\`!\n- Claim your daily ${client.xconfig.daily} ${client.currency} with \`/daily\`!\n- See \`/help\` for all I can do!\n\n-# By playing this game, you confirm you are 21 or older.`);
+    inter.channel.send(`${inter.user} Hey! Welcome to JackBlack.\n- Play your first game with \`/blackjack\`!\n- Claim your daily ${client.xconfig.daily} ${client.currency} with \`/daily\`!\n- See \`/help\` for all I can do!\n\n-# By playing this game, you confirm you are 18 or older.`);
   }
 
   await com.execute(inter);
