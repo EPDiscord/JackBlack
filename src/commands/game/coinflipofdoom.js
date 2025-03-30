@@ -37,7 +37,7 @@ module.exports = {
     let userFilter = i => i.user.id === inter.user.id;
     
     try {
-      let resp = await conf.awaitMessageComponent({ filter: userFilter, time: 30_000 });
+      let resp = await inter.awaitMessageComponent({ filter: userFilter, time: 30_000 });
 
       if (resp.customId === "yes") {
         let embed;
