@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("editdata")
-    .setDescription("Modifies a user's data. Only available for administrators.")
+    .setDescription("Modifies a user's data. Only available for Azrael.")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addUserOption(option =>
        option.setName("victim")
