@@ -87,8 +87,9 @@ module.exports = {
       } else if (resp.customId === "no") {
         await inter.editReply({ content: "Wise choice.", components: [], ephemeral: true });
       }
-    } catch (_) {
+    } catch (error) {
       await inter.editReply({ content: "Game cancelled - timed out after 30 seconds.", components: [], ephemeral: true });
+      console.log(error);
     }
   }
 }
