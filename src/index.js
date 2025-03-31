@@ -47,7 +47,7 @@ class DB {
       } catch (e) {
         if (e && retries < 5) {
           await new Promise(r => setTimeout(r, 5000));
-          console.log(`request failed, retrying... (${++retries}/5)`);
+          console.log(`request failed, retrying... (${++retries}/5) => ${e}`);
         } else {
           throw e;
         }

@@ -11,6 +11,20 @@ module.exports = {
       return;
     }
 
+    let candaily = await inter.client.datadb.sql`
+      select last_daily from users
+      where
+        snowflake = ${inter.user.id} and last_daily < 'today'
+        or
+        snowflake = ${inter.user.id} and last_daily is null`;
+
+    if (!candaily.length) {
+      await inter.reply({ content: "No. Don't try that.\nThis command can only be used *instead* of `/daily`, and follows the same cooldown.", ephemeral: true });
+      return;
+    }
+
+    await inter.client.datadb.sql`update users set last_daily = 'today' where snowflake = ${inter.user.id}`;
+
     // Array.prototype.choose is already defined to use special "better" random function, because am lazy i do this
     let won = Math.seedrandom() - 0.5;
     let output = won > 0;
@@ -25,19 +39,19 @@ module.exports = {
       .setLabel("No thanks")
       .setStyle(ButtonStyle.Secondary);
 
-    const buts = new ActionRowBuilder().addComponents(confirmBut, cancelBut);
+    let buts = new ActionRowBuilder().addComponents(confirmBut, cancelBut);
 
-    await inter.reply({
+    let msg = await inter.reply({
       content: "Are you extremely, absolutely, verifiably, utmostly sure that you really want to do this?",
-      compenents: [buts],
-      ephermetal: false,
+      components: [buts],
+      ephemeral: false,
     });
 
     // make sure that only the person asking is responding (just to make sure, even though it's ephemeral)
     let userFilter = i => i.user.id === inter.user.id;
     
     try {
-      let resp = await inter.awaitMessageComponent({ filter: userFilter, time: 30_000 });
+      let resp = await msg.awaitMessageComponent({ filter: userFilter, time: 30_000 });
 
       if (resp.customId === "yes") {
         let embed;
@@ -48,10 +62,14 @@ module.exports = {
             .setDescription(won > 0.2 ? "Phew. You did it." : `That was close though, the coin was ${won*100}% away from landing the other way.`)
             .setFooter({ text: "JackBlack by firefish111", iconURL: "https://cdn.discordapp.com/avatars/871048036342710312/fdabfe1e8f750469342c73374c430184.webp" });
 
+          await inter.client.datadb.modconf(inter.guildId, "loanpool", 
+            await inter.client.datadb.getusr(inter.user.id, "debt")
+          );
           await inter.client.datadb.sql`
             update users set debt = 0
             where snowflake = ${inter.user.id};
           `;
+
         } else {
           let n = await inter.client.datadb.getusr(inter.user.id, "bal");
           embed = new EmbedBuilder()

@@ -8,6 +8,7 @@ services:
       - "5433:5433"
     networks:
       - movement
+    restart: always
 
   bot:
     build: .
@@ -18,6 +19,7 @@ services:
       - "3000:3000"
     networks:
       - movement
+    restart: always
 
 networks:
   movement:
