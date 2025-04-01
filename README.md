@@ -30,3 +30,7 @@ the `config/emoji.json` contains a lookup table of all emojis needed by the bot 
 - `/loan` command - borrow money
 - `/stats` command - server admin only, shows you the server's statistics gathered
 - `/transfer` command - transfer money between users
+
+# Credits
+
+Credits to firefish111, azrael and Peppybug for developing maintaining this code in the https://discord.gg/ericparker server
