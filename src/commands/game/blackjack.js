@@ -56,10 +56,10 @@ module.exports = {
     let toEmoji = box => inter.client.emojistore[box.suit][box.card];
 
     // make embed thunk
-    let mkEmbed = stake => new EmbedBuilder()
+    let mkEmbed = (stake, delay) => new EmbedBuilder()
       .setColor("#c82626")
       .setTitle("BlackJack")
-      .setDescription(`Stake: ${inter.client.currency}${stake}`)
+      .setDescription(`Stake: ${inter.client.currency}${stake}` + (delay ? `\nAutomatic forfeit <t:${Math.floor((Date.now()+delay)/1000)}:R>` : ""))
       .addFields(
         { name: `Banker ${isNaN(collect(banker)) ? "" : `(${collect(banker) > 21 ? "bust!" : collect(banker)})`}`, value: `${banker.map(toEmoji).join(" ")}` },
         { name: "\u200B", value: "\u200B" },
@@ -104,16 +104,18 @@ module.exports = {
       .setEmoji(inter.client.emojistore.misc.hit)
       .setStyle(ButtonStyle.Success);
 
-    const stickBut = new ButtonBuilder()
-      .setCustomId("stick")
+    const standBut = new ButtonBuilder()
+      .setCustomId("stand")
       .setLabel("Stand")
-      .setEmoji(inter.client.emojistore.misc.stick)
+      .setEmoji(inter.client.emojistore.misc.stand)
       .setStyle(ButtonStyle.Danger);
 
-    const input = new ActionRowBuilder().addComponents(hitBut, stickBut);
+    const input = new ActionRowBuilder().addComponents(hitBut, standBut);
+
+    const FORFEIT_AFTER = 300_000; // 300 sec = 5min
 
     let game = await inter.reply({
-      embeds: [mkEmbed(inter.options.getInteger("stake"))],
+      embeds: [mkEmbed(inter.options.getInteger("stake"), FORFEIT_AFTER)],
       components: [input],
       ephemeral: false,
     });
@@ -125,31 +127,53 @@ module.exports = {
       // stop hijacking others' games
       let userFilter = i => i.user.id === inter.user.id;
 
-      // buttons
-      let resp = await game.awaitMessageComponent({ filter: userFilter });
-      switch (resp.customId) {
-      case "hit":
-        genCard(true);
-        ace(true);
-        break;
-      case "stick":
-        stop = true;
-        break;
-      default:
-        throw "hmmm, neither hit nor stand (BAD!)";
-      }
+      try {
+        // buttons
+        let resp = await game.awaitMessageComponent({ filter: userFilter, time: FORFEIT_AFTER });
+        switch (resp.customId) {
+        case "hit":
+          genCard(true);
+          ace(true);
+          break;
+        case "stand":
+          stop = true;
+          break;
+        default:
+          throw "hmmm, neither hit nor stand (BAD!)";
+        }
 
-      await resp.update({
-        embeds: [mkEmbed(inter.options.getInteger("stake"))],
-        components: stop ? [] : [input],
-        ephemeral: false,
-      });
+        await resp.update({
+          embeds: [mkEmbed(inter.options.getInteger("stake"), FORFEIT_AFTER)],
+          components: stop ? [] : [input],
+          ephemeral: false,
+        });
+      } catch (_) {
+        await inter.editReply({
+          embeds: [
+            mkEmbed(inter.options.getInteger("stake"))
+            .addFields({
+              name: "Timeout; automatic forfeit.",
+              value: `You lose \`${inter.client.currency}${inter.options.getInteger("stake")}\`.\n(don't try to dodge unfavourable cards, nice try)`,
+              inline: true,
+            })
+          ],
+          components: [],
+          ephemeral: false
+        });
+
+        await inter.client.datadb.modusr(inter.user.id, "bal", -inter.options.getInteger("stake")); // negative if lost, positive if won
+        await inter.client.datadb.modconf(inter.guildId, `totallost`, inter.options.getInteger("stake"));
+
+        // no longer playing
+        inter.client.playing_rn.splice(inter.client.playing_rn.indexOf(inter.user.id), 1);
+        return;
+      }
     }
 
     // be rid of face down (superficially, turn it over)
     banker.pop();
     genCard(false); ace(false);
-
+6
     // end game thunk
     // won = -1 => loss
     // won = 0 => pushback
@@ -168,8 +192,9 @@ module.exports = {
         ephemeral: false,
       });
 
-      await inter.client.datadb.modusr(inter.user.id, "bal", inter.options.getInteger("stake") * won); // negative if lost, positive if won
-      if (won != 0) await inter.client.datadb.modconf(inter.guildId, `total${won >= 1 ? 'won' : 'lost'}`, inter.options.getInteger("stake"));
+      let realwin = Math.floor(inter.options.getInteger("stake") * won);
+      await inter.client.datadb.modusr(inter.user.id, "bal", realwin); // negative if lost, positive if won
+      if (won != 0) await inter.client.datadb.modconf(inter.guildId, `total${won >= 1 ? 'won' : 'lost'}`, Math.abs(realwin));
 
       // no longer playing
       inter.client.playing_rn.splice(inter.client.playing_rn.indexOf(inter.user.id), 1);
@@ -192,7 +217,7 @@ module.exports = {
       end(1, "Five card trick!");
       return;
     } else if (collect(banker) > 21) {
-      end(1, "Banker bust!"); // there is no "you beat the banker" as banker will never stick less than player
+      end(1, "Banker bust!"); // there is no "you beat the banker" as banker will never stand less than player
       return; // have to return otherwise banker will unbust
     } else if (collect(banker) === collect(player)) { // pushback (noone loses any money) for fairness
       end(0, "Tie; Pushback.");

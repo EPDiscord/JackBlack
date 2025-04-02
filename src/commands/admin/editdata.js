@@ -27,7 +27,6 @@ module.exports = {
     if (inter.user.id != "125685156064395264") {
       inter.reply({ content: "Error: No permissions to use this command.", ephemeral: true });
     } else {
-
       const who = inter.options.getUser("victim");
       const what = inter.options.getString("field");
       const val = inter.options.getInteger("value");
@@ -43,8 +42,8 @@ module.exports = {
           return inter.reply({ content: "User not found in the database!", ephemeral: true });
         }
         
-      await inter.reply({ content: `Successfully updated the \`${what}\` for \`${who.username}\`. Set value to \`${val}\`.`, ephemeral: true });
-      } catch (erorr) {
+        await inter.reply({ content: `Successfully updated the \`${what}\` for \`${who.username}\`. Set value to \`${val}\`.`, ephemeral: true });
+      } catch (error) {
         console.error(error);
         inter.reply({ content: "An error occurred while updating the database.", ephemeral: true });
       }
