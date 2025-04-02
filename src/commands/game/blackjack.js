@@ -179,12 +179,13 @@ module.exports = {
     // won = 0 => pushback
     // won = 1 => win
     const end = async (won, how) => {
+      let realwin = Math.floor(inter.options.getInteger("stake") * won);
       await inter.editReply({
         embeds: [
           mkEmbed(inter.options.getInteger("stake"))
           .addFields({
             name: how,
-            value: `You ${won >= 1 ? 'win' : won == 0 ? 'keep your' : 'lose'} \`${inter.client.currency}${inter.options.getInteger("stake")}\`${won == 1 ? '!' : '.'}`,
+            value: `You ${realwin >= 1 ? 'win' : realwin == 0 ? 'keep your' : 'lose'} \`${inter.client.currency}${Math.abs(realwin)}\`${realwin > 0 ? '!' : '.'}`,
             inline: true,
           })
         ],
@@ -192,7 +193,6 @@ module.exports = {
         ephemeral: false,
       });
 
-      let realwin = Math.floor(inter.options.getInteger("stake") * won);
       await inter.client.datadb.modusr(inter.user.id, "bal", realwin); // negative if lost, positive if won
       if (won != 0) await inter.client.datadb.modconf(inter.guildId, `total${won >= 1 ? 'won' : 'lost'}`, Math.abs(realwin));
 
