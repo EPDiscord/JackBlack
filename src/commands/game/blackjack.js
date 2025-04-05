@@ -173,7 +173,7 @@ module.exports = {
     // be rid of face down (superficially, turn it over)
     banker.pop();
     genCard(false); ace(false);
-6
+
     // end game thunk
     // won = -1 => loss
     // won = 0 => pushback
@@ -185,7 +185,7 @@ module.exports = {
           mkEmbed(inter.options.getInteger("stake"))
           .addFields({
             name: how,
-            value: `You ${realwin >= 1 ? 'win' : realwin == 0 ? 'keep your' : 'lose'} \`${inter.client.currency}${Math.abs(realwin)}\`${realwin > 0 ? '!' : '.'}`,
+            value: `You ${realwin >= 1 ? 'win' : realwin == 0 ? 'keep your' : 'lose'} \`${inter.client.currency}${Math.abs(realwin == 0 ? inter.options.getInteger("stake") : realwin)}\`${realwin > 0 ? '!' : '.'}`,
             inline: true,
           })
         ],
@@ -230,7 +230,7 @@ module.exports = {
     } else if (banker.length === 2 && collect(banker) === 21) {
       end(-1, "Banker's BlackJack.");
     } else if (banker.length === 5 && collect(banker) <= 21) {
-      end(-1, "Banker's five card trick.");
+      end(-1, "Banker's five card trick."); // fivecard trick value doesnt actually matter, banker just better than player
     } else if (collect(banker) > collect(player)) {
       end(-1, "Banker beat you.");
     } else { // in case of an edge case, you lose by default
