@@ -14,7 +14,8 @@ module.exports = {
               { name: 'Hearts', value: 'hearts' },
               { name: 'Clubs', value: 'clubs' },
               { name: 'Diamonds', value: 'diamonds' },
-              { name: 'Other', value: 'misc' }
+              { name: 'Other', value: 'misc' },
+              { name: 'Slots', value: 'slots' }
             )),
   execute: async inter => {
     if (inter.options.getString("category")) {

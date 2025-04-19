@@ -149,6 +149,7 @@ client.datadb = new DB("./db.json");
 client.emojistore = readx.emoji;
 client.xconfig = readx.conf;
 client.sleep = ms => new Promise(r => setTimeout(r, ms));
+client.playing_rn ??= [];
 
 // alias, because this was shoehorned on
 client.currency = readx.conf.currency;
