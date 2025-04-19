@@ -21,8 +21,7 @@ module.exports = {
         let mkEmbed = stake => new EmbedBuilder()
             .setColor("#c82626")
             .setTitle("Roulette")
-            .setDescription(`Stake: ${inter.client.currency}${stake}`)
-            .setFooter({ text: "JackBlack by firefish111", iconURL: "https://cdn.discordapp.com/avatars/871048036342710312/fdabfe1e8f750469342c73374c430184.webp" });
+            .setDescription(`Stake: ${inter.client.currency}${stake}`);
 
         let balanc = await inter.client.datadb.getusr(inter.user.id, "bal");
         if (balanc == 0) {

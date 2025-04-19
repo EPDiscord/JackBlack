@@ -64,8 +64,7 @@ module.exports = {
         { name: `Banker ${isNaN(collect(banker)) ? "" : `(${collect(banker) > 21 ? "bust!" : collect(banker)})`}`, value: `${banker.map(toEmoji).join(" ")}` },
         { name: "\u200B", value: "\u200B" },
         { name: `Player (${collect(player) > 21 && player.length > 2 ? "bust!" : collect(player)})`, value: `${player.map(toEmoji).join(" ")}` },
-      )
-      .setFooter({ text: "JackBlack by firefish111", iconURL: "https://cdn.discordapp.com/avatars/871048036342710312/fdabfe1e8f750469342c73374c430184.webp" });
+      );
 
     let balanc = await inter.client.datadb.getusr(inter.user.id, "bal");
     if (balanc == 0) {

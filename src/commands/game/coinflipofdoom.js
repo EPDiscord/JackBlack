@@ -59,8 +59,7 @@ module.exports = {
           embed = new EmbedBuilder()
             .setColor("#66cc44")
             .setTitle("Your debt is gone!")
-            .setDescription(won > 0.2 ? "Phew. You did it." : `That was close though, the coin was ${won*100}% away from landing the other way.`)
-            .setFooter({ text: "JackBlack by firefish111", iconURL: "https://cdn.discordapp.com/avatars/871048036342710312/fdabfe1e8f750469342c73374c430184.webp" });
+            .setDescription(won > 0.2 ? "Phew. You did it." : `That was close though, the coin was ${won*100}% away from landing the other way.`);
 
           await inter.client.datadb.modconf(inter.guildId, "loanpool", 
             await inter.client.datadb.getusr(inter.user.id, "debt")
@@ -80,8 +79,7 @@ module.exports = {
               n 
                 ? { name: `Hope you didn't like having that \`${inter.client.currency}${n}\`...`, value: "...cause it's gone." }
                 : { name: "You have no money (😢), so um...", value: "...we doubled your debt. It's only fair." }
-            )
-            .setFooter({ text: "JackBlack by firefish111", iconURL: "https://cdn.discordapp.com/avatars/871048036342710312/fdabfe1e8f750469342c73374c430184.webp" });
+            );
 
           if (n) {
             await inter.client.datadb.sql`
